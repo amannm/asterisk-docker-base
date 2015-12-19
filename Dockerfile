@@ -42,7 +42,7 @@ RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-curren
 WORKDIR /var/lib/asterisk/sounds
 
 RUN wget http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-wav-current.tar.gz \
-    && tar xfz asterisk-extra-sounds-en-wav-current.tar.gz \
+    && tar -zxvf asterisk-extra-sounds-en-wav-current.tar.gz \
     && rm -f asterisk-extra-sounds-en-wav-current.tar.gz
 
 EXPOSE 5060
