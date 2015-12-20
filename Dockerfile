@@ -3,7 +3,7 @@ MAINTAINER Amann Malik <amannmalik@gmail.com>
 
 RUN apt-get update
 
-RUN apt-get install --no-install-recommends -y build-essential wget
+RUN apt-get install --no-install-recommends -y build-essential bc libssl-dev wget
 
 WORKDIR /lib/modules
 
@@ -28,7 +28,33 @@ RUN wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-
     && make config \
     && service dahdi start
 
-RUN apt-get install --no-install-recommends -y libncurses-dev libz-dev libssl-dev libxml2-dev libsqlite3-dev uuid-dev uuid libjansson-dev
+RUN apt-get install --no-install-recommends -y libtiff-dev
+
+RUN wget http://www.soft-switch.org/downloads/spandsp/spandsp-0.0.6.tar.gz \
+    && tar -zxvf spandsp-0.0.6.tar.gz \
+    && rm -f spandsp-0.0.6.tar.gz \
+    && cd spandsp-0.0.6 \
+    && ./configure \
+    && make \
+    && make install
+
+RUN wget --no-check-certificate https://iksemel.googlecode.com/files/iksemel-1.4.tar.gz \
+    && tar -zxvf iksemel-1.4.tar.gz \
+    && rm -f iksemel-1.4.tar.gz \
+    && cd iksemel-1.4 \
+    && ./configure \
+    && make \
+    && make install
+
+RUN wget http://sourceforge.net/projects/srtp/files/srtp/1.4.4/srtp-1.4.4.tgz \
+    && tar -zxvf srtp-1.4.4.tgz \
+    && rm -f srtp-1.4.4.tgz \
+    && cd srtp \
+    && ./configure CFLAGS=-fPIC --prefix=/usr \
+    && make \
+    && make install
+
+RUN apt-get install --no-install-recommends -y libncurses-dev libz-dev libxml2-dev libsqlite3-dev uuid-dev uuid libjansson-dev
 
 RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz \
     && tar -zxvf asterisk-13-current.tar.gz \
@@ -44,6 +70,8 @@ WORKDIR /var/lib/asterisk/sounds
 RUN wget http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-wav-current.tar.gz \
     && tar -zxvf asterisk-extra-sounds-en-wav-current.tar.gz \
     && rm -f asterisk-extra-sounds-en-wav-current.tar.gz
+
+ADD asterisk /etc/asterisk
 
 EXPOSE 5060
 
