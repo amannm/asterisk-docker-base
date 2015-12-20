@@ -1,4 +1,7 @@
 .idea/
 *.iml
-container.json
-asterisk/*.conf
+asterisk/sip.conf
+asterisk/res_parking.conf
+asterisk/extensions.conf
+asterisk/chan_dahdi.conf
+asterisk/calendar.conf

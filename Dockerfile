@@ -28,33 +28,9 @@ RUN wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-
     && make config \
     && service dahdi start
 
-RUN apt-get install --no-install-recommends -y libtiff-dev
-
-RUN wget http://www.soft-switch.org/downloads/spandsp/spandsp-0.0.6.tar.gz \
-    && tar -zxvf spandsp-0.0.6.tar.gz \
-    && rm -f spandsp-0.0.6.tar.gz \
-    && cd spandsp-0.0.6 \
-    && ./configure \
-    && make \
-    && make install
-
-RUN wget --no-check-certificate https://iksemel.googlecode.com/files/iksemel-1.4.tar.gz \
-    && tar -zxvf iksemel-1.4.tar.gz \
-    && rm -f iksemel-1.4.tar.gz \
-    && cd iksemel-1.4 \
-    && ./configure \
-    && make \
-    && make install
-
-RUN wget http://sourceforge.net/projects/srtp/files/srtp/1.4.4/srtp-1.4.4.tgz \
-    && tar -zxvf srtp-1.4.4.tgz \
-    && rm -f srtp-1.4.4.tgz \
-    && cd srtp \
-    && ./configure CFLAGS=-fPIC --prefix=/usr \
-    && make \
-    && make install
-
-RUN apt-get install --no-install-recommends -y libncurses-dev libz-dev libxml2-dev libsqlite3-dev uuid-dev uuid libjansson-dev
+RUN apt-get install --no-install-recommends -y \
+    libncurses-dev libz-dev libxml2-dev libsqlite3-dev uuid-dev uuid libjansson-dev \
+    libsnmp-dev libiksemel-dev libical-dev libspandsp-dev libsrtp-dev
 
 RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz \
     && tar -zxvf asterisk-13-current.tar.gz \
@@ -62,14 +38,40 @@ RUN wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-curren
     && cd asterisk-13.* \
     && ./configure \
     && make menuselect.makeopts \
+    && menuselect/menuselect \
+        --enable CORE-SOUNDS-EN-WAV \
+        --enable CORE-SOUNDS-EN-G722 \
+        --enable CORE-SOUNDS-EN-ULAW \
+        --enable CORE-SOUNDS-EN-GSM \
+        --enable MOH-OPSOUND-WAV \
+        --enable MOH-OPSOUND-G722 \
+        --enable MOH-OPSOUND-ULAW \
+        --enable MOH-OPSOUND-GSM \
+        --enable EXTRA-SOUNDS-EN-WAV \
+        --enable EXTRA-SOUNDS-EN-G722 \
+        --enable EXTRA-SOUNDS-EN-ULAW \
+        --enable EXTRA-SOUNDS-EN-GSM \
+        menuselect.makeopts \
     && make install \
     && make config
 
 WORKDIR /var/lib/asterisk/sounds
 
 RUN wget http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-wav-current.tar.gz \
-    && tar -zxvf asterisk-extra-sounds-en-wav-current.tar.gz \
+    && tar xfz asterisk-extra-sounds-en-wav-current.tar.gz \
     && rm -f asterisk-extra-sounds-en-wav-current.tar.gz
+
+RUN wget http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-g722-current.tar.gz \
+    && tar xfz asterisk-extra-sounds-en-g722-current.tar.gz \
+    && rm -f asterisk-extra-sounds-en-g722-current.tar.gz
+
+RUN wget http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-ulaw-current.tar.gz \
+    && tar xfz asterisk-extra-sounds-en-ulaw-current.tar.gz \
+    && rm -f asterisk-extra-sounds-en-ulaw-current.tar.gz
+
+RUN wget http://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-gsm-current.tar.gz \
+    && tar xfz asterisk-extra-sounds-en-gsm-current.tar.gz \
+    && rm -f asterisk-extra-sounds-en-gsm-current.tar.gz
 
 ADD asterisk /etc/asterisk
 
